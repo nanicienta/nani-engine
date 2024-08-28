@@ -5,17 +5,16 @@ services:
     image: localstack/localstack:latest
     container_name: localstack
     ports:
-      - "4566:4566"   # puerto para el acceso a todos los servicios
-      - "4571:4571"   # puerto para SQS específico
+      - "4566:4566"
+      - "4571:4571"
     environment:
-      - SERVICES=sqs   # Activar solo el servicio SQS para este ejemplo
+      - SERVICES=sqs
       - DEFAULT_REGION=us-east-1
       - EDGE_PORT=4566
     volumes:
       - "./localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
-  # Otros servicios como MongoDB y PostgreSQL si lo deseas
   mongo:
     image: mongo:6.0
     container_name: mongo
@@ -27,7 +26,12 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - mongo_data:/data/db
-
+  redis:
+    image: redis:6.0
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
   postgres:
     image: postgres:15
     container_name: postgres

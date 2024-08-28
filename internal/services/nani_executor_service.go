@@ -31,16 +31,31 @@ func (nes *NaniExecutorService) RegisterFeature(feature features.Feature) {
 
 func (nes *NaniExecutorService) ExecuteWorkflow(workflow model.Workflow) {
 	nextStep := workflow.Init
-	nextStepNode := workflow.GetNode(nextStep)
-	found, feature := nes.getFeature(nextStepNode.Type)
-	if !found {
-		//TODO create new error
-		_ = fmt.Errorf("feature not found for node type: %s", nextStepNode.Type)
+	previousPayload := make(map[string]interface{})
+	for nextStep != "" {
+		found, nextStepNode := workflow.GetNode(nextStep)
+		if !found {
+			//TODO create new error
+			_ = fmt.Errorf("node not found for id: %s", nextStep)
+		}
+		found, feature := nes.getFeature(nextStepNode.Type)
+		if !found {
+			//TODO create new error
+			_ = fmt.Errorf("feature not found for node type: %s", nextStepNode.Type)
+		}
+		var err error
+		var payload map[string]interface{}
+		payload, nextStep, err = feature.Execute(
+			nextStepNode,
+			workflow,
+			previousPayload,
+		) //TODO here should I create a context to send all things necesary
+		if err != nil {
+			//TODO create new error
+			_ = fmt.Errorf("error executing feature: %s", err.Error)
+		}
+		previousPayload = payload
 	}
-	feature.Execute(
-		nextStepNode,
-		workflow,
-	) //TODO here should I create a context to send all things necesary
 }
 
 func (nes *NaniExecutorService) getFeature(featureType string) (bool, features.Feature) {

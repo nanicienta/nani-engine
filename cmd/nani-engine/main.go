@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/nanicienta/nani-commons/pkg/model"
 	"github.com/nanicienta/nani-engine/internal/services"
+	"github.com/nanicienta/nani-engine/pkg/features/hola_mundo"
 	"github.com/nanicienta/nani-engine/pkg/features/postgresql"
 	"io/ioutil"
 	"log"
@@ -34,4 +35,6 @@ func main() {
 
 func initFeatures() {
 	postgresql.InitPostgresSelectFeature()
+	hola_mundo.InitPostgresSelectFeature()
+
 }
